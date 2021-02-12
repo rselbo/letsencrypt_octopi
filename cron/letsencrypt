@@ -1,0 +1,14 @@
+#!/bin/sh -e
+#Set this to the full path to the folder containing the docker-compose.yaml e.g /home/user/letsencrypt
+DOCKERFILE_PATH=<path to letsencrypt>
+#Set this to the domain where you host your octopi e.g. octoprint.yourdomain.com
+OCTOPI_DOMAIN=<sub.domain.com>
+#Set this to the full path to where you have the ssh key to the octopi e.g /home/user/.ssh/pi.key
+OCTOPI_KEY=<path to pi.key>
+
+cd $DOCKERFILE_PATH
+docker-compose run --rm letsencrypt
+#Octopi snakeoil.pem building
+cat $DOCKERFILE_PATH/config/live/$OCTOPI_DOMAIN/cert.pem $DOCKERFILE_PATH/config/live/$OCTOPI_DOMAIN/privkey.pem > $DOCKERFILE_PATH/config/live/$OCTOPI_DOMAIN/snakeoil.pem
+rsync -az -e "ssh -i $OCTOPI_KEY" $DOCKERFILE_PATH/config/live/$OCTOPI_DOMAIN/snakeoil.pem pi@$OCTOPI_DOMAIN:~/letsencrypt/
+cd -

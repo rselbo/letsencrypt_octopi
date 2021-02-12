@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [[ -z $(diff /etc/ssl/snakeoil.pem /home/pi/letsencrypt/snakeoil.pem) ]]
+then
+  echo "snakeoil.pem is unchanged"
+else
+  echo "Updating snakeoil.pem"
+  cp /home/pi/letsencrypt/snakeoil.pem /etc/ssl/snakeoil.pem
+  systemctl restart haproxy
+fi
